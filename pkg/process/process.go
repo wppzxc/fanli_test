@@ -14,7 +14,7 @@ import (
 
 const (
 	GetProcessUrl = "http://v2.yituike.com/fans/fans/proxy_goods?state=1&page=1&limit=10"
-	Data = `{
+	Data          = `{
    "code": 0,
    "msg": "",
    "count": 2,
@@ -113,13 +113,10 @@ func getItems(token string) (types.ItemResult, error) {
 		//fmt.Println(err)
 	}
 	defer resp.Body.Close()
-	data,_ := ioutil.ReadAll(resp.Body)
-	//data = []byte(Data)
+	data, _ := ioutil.ReadAll(resp.Body)
 	result := types.ItemResult{}
-	err = json.Unmarshal(data, &result)
-	//items := []types.Item{}
-	if err != nil {
-		glog.Error(err)
+	if err = json.Unmarshal(data, &result); err != nil {
+		glog.Error(err, "Maybe the token is invalide ! ")
 		//fmt.Println(err)
 		return types.ItemResult{}, err
 	}

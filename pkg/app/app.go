@@ -11,20 +11,22 @@ import (
 	"net/http"
 	"time"
 )
+
 const (
-	GetTokenUrl = "http://v2.yituike.com/admin/Weixinm/login?access_token=test&openid=os_Ph0hGJxQNrHmNWrL5xV3nuTuc&invite_id=208"
+	GetTokenUrlPrefix = "http://v2.yituike.com/admin/Weixinm/login?access_token=098f6bcd4621d373cade4e832627b4f6&openid="
+	//"os_Ph0hGJxQNrHmNWrL5xV3nuTuc"
 )
 
 func AppRun(conf types.Config) {
 	glog.Info("Start process ... !")
 	//fmt.Println("Start process ... !")
-	token, err := getToken()
+	token, err := getToken(conf)
 	if err != nil {
-		glog.Error(err)
+		glog.Fatal(err)
 	}
 	md5ProStr := "test"
 	md5PreStr := "test"
-	for range time.Tick(5 * time.Second) {
+	for range time.Tick(time.Duration(conf.Duration) * time.Second) {
 		md5ProStr, md5PreStr = start(conf, md5ProStr, md5PreStr, token)
 	}
 }
@@ -35,16 +37,19 @@ func start(conf types.Config, md5ProStr string, md5PreStr string, token string) 
 	return md5ProStrNew, md5PreStrNew
 }
 
-func getToken() (string, error) {
+func getToken(conf types.Config) (string, error) {
+	if len(conf.Uname) == 0 {
+		return "", fmt.Errorf("invalide uname ! : %s ", conf.Uname)
+	}
 	client := &http.Client{}
-	req, err := http.NewRequest(http.MethodGet, GetTokenUrl, nil)
+	req, err := http.NewRequest(http.MethodGet, GetTokenUrlPrefix+conf.Uname, nil)
 	if err != nil {
 		glog.Error(err)
 		//fmt.Println(err)
 	}
 	resp, err := client.Do(req)
 	defer resp.Body.Close()
-	data,_ := ioutil.ReadAll(resp.Body)
+	data, _ := ioutil.ReadAll(resp.Body)
 	result := types.TokenResult{}
 	err = json.Unmarshal(data, &result)
 	if err != nil {

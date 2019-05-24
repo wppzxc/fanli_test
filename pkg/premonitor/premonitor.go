@@ -75,13 +75,11 @@ func getItems(token string) (types.ItemResult, error) {
 		//fmt.Println(err)
 	}
 	defer resp.Body.Close()
-	data,_ := ioutil.ReadAll(resp.Body)
+	data, _ := ioutil.ReadAll(resp.Body)
 	//data = []byte(Data)
 	result := types.ItemResult{}
-	err = json.Unmarshal(data, &result)
-	//items := []types.Item{}
-	if err != nil {
-		glog.Error(err)
+	if err = json.Unmarshal(data, &result); err != nil {
+		glog.Error(err, "Maybe the token is invalide ! ")
 		//fmt.Println(err)
 		return types.ItemResult{}, err
 	}

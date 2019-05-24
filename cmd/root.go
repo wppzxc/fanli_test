@@ -23,10 +23,12 @@ import (
 	"os"
 )
 
-//var uname string
+var uname string
+
 //var password string
 //var toEmail string
 var toWeChat string
+var duration int64
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -42,11 +44,12 @@ to quickly create a Cobra application.`,
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
 		conf := types.Config{
-			//Uname: uname,
+			Uname: uname,
 			//Password: password,
 			//FromEmail: fromEmail,
 			//ToEmail: toEmail,
 			ToWeChat: toWeChat,
+			Duration: duration,
 		}
 		if err := process.ValidateFlags(conf); err != nil {
 			glog.Error(err)
@@ -78,7 +81,9 @@ func init() {
 	//rootCmd.Flags().StringVarP(&password, "password", "p", "password", "发送邮件的用户密码")
 	//rootCmd.Flags().StringVarP(&fromEmail, "fromEmail", "f", "", "发送邮件的邮箱地址")
 	//rootCmd.Flags().StringVarP(&toEmail, "toEmail", "t", "toemail@qq.com", "目的邮箱地址")
+	rootCmd.Flags().StringVarP(&uname, "uname", "u", "", "微信openid")
 	rootCmd.Flags().StringVarP(&toWeChat, "toWeChat", "w", "user", "目的微信用户")
+	rootCmd.Flags().Int64VarP(&duration, "duration", "d", 5, "刷新库存的间隔")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
