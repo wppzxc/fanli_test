@@ -3,11 +3,11 @@ package app
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/golang/glog"
 	"github.com/wpp/fanli_test/pkg/premonitor"
 	"github.com/wpp/fanli_test/pkg/process"
 	"github.com/wpp/fanli_test/pkg/types"
 	"io/ioutil"
+	"k8s.io/klog"
 	"net/http"
 	"time"
 )
@@ -15,14 +15,16 @@ import (
 const (
 	GetTokenUrlPrefix = "http://v2.yituike.com/admin/Weixinm/login?access_token=098f6bcd4621d373cade4e832627b4f6&openid="
 	//"os_Ph0hGJxQNrHmNWrL5xV3nuTuc"
+	//os_Ph0j7eHfGJhowF8E-_kJc1fiM
+//	-u os_Ph0hGJxQNrHmNWrL5xV3nuTuc -w bigben -d 5
 )
 
 func AppRun(conf types.Config) {
-	glog.Info("Start process ... !")
+	klog.Info("Start process ... !")
 	//fmt.Println("Start process ... !")
 	token, err := getToken(conf)
 	if err != nil {
-		glog.Fatal(err)
+		klog.Fatal(err)
 	}
 	md5ProStr := "test"
 	md5PreStr := "test"
@@ -42,9 +44,9 @@ func getToken(conf types.Config) (string, error) {
 		return "", fmt.Errorf("invalide uname ! : %s ", conf.Uname)
 	}
 	client := &http.Client{}
-	req, err := http.NewRequest(http.MethodGet, GetTokenUrlPrefix+conf.Uname, nil)
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprint(GetTokenUrlPrefix, conf.Uname, "&invite_id=007"), nil)
 	if err != nil {
-		glog.Error(err)
+		klog.Error(err)
 		//fmt.Println(err)
 	}
 	resp, err := client.Do(req)
@@ -53,7 +55,7 @@ func getToken(conf types.Config) (string, error) {
 	result := types.TokenResult{}
 	err = json.Unmarshal(data, &result)
 	if err != nil {
-		glog.Error(err)
+		klog.Error(err)
 		//fmt.Println(err)
 	}
 	if result.Error != 0 {

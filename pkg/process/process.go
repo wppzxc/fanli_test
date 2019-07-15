@@ -5,10 +5,10 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"github.com/golang/glog"
 	"github.com/wpp/fanli_test/pkg/types"
 	"github.com/wpp/fanli_test/pkg/utils"
 	"io/ioutil"
+	"k8s.io/klog"
 	"net/http"
 )
 
@@ -49,7 +49,10 @@ const (
 
 func ValidateFlags(conf types.Config) error {
 	if len(conf.ToWeChat) == 0 {
-		return fmt.Errorf("Error, %s is invalidate ", conf.ToWeChat)
+		return fmt.Errorf("Error, toWeChat is invalidate ")
+	}
+	if len(conf.Uname) == 0 {
+		return fmt.Errorf("Error, uname is invalidate ")
 	}
 	return nil
 }
@@ -57,23 +60,23 @@ func ValidateFlags(conf types.Config) error {
 func StartProcess(conf types.Config, md5Str string, token string) string {
 	result, err := getItems(token)
 	if err != nil {
-		glog.Error(err)
+		klog.Error(err)
 		//fmt.Println(err2)
 		return md5Str
 	}
 	if result.Count > 0 {
-		glog.Info("There found some process items !")
+		klog.Info("There found some process items !")
 		//fmt.Println("There found some items !")
 
 		dataStr, err2 := json.Marshal(result)
 		if err2 != nil {
-			glog.Error(err2)
+			klog.Error(err2)
 		}
 		h := md5.New()
 		h.Write(dataStr)
 		newMd5Str := hex.EncodeToString(h.Sum(nil))
 		if md5Str == newMd5Str {
-			glog.Info("The process items are not modify !")
+			klog.Info("The process items are not modify !")
 			//fmt.Println("The items are not modify !")
 			return md5Str
 		}
@@ -81,19 +84,19 @@ func StartProcess(conf types.Config, md5Str string, token string) string {
 		if ok {
 			msg := utils.GetMsg(result)
 			if e := utils.SendMessage(msg, conf.ToWeChat); e != nil {
-				glog.Errorf("Error on send wechat msg : %s", e)
+				klog.Errorf("Error on send wechat msg : %s", e)
 				//fmt.Println("Error on send wechat msg : ", err)
 			} else {
-				glog.Info("Success on send msg to wechat !")
+				klog.Info("Success on send msg to wechat !")
 				//fmt.Println("Success on send msg to wechat !")
 			}
 		} else {
-			glog.Error("Check WeChat health error ! ")
+			klog.Error("Check WeChat health error ! ")
 			//fmt.Println("Check WeChat health error ! ")
 		}
 		return newMd5Str
 	} else {
-		glog.Info("There is no items !")
+		klog.Info("There is no items !")
 		//fmt.Println("There is no items !")
 		return md5Str
 	}
@@ -103,20 +106,20 @@ func getItems(token string) (types.ItemResult, error) {
 	client := &http.Client{}
 	req, err := http.NewRequest(http.MethodGet, GetProcessUrl, nil)
 	if err != nil {
-		glog.Error(err)
+		klog.Error(err)
 		//fmt.Println(err)
 	}
 	req.Header.Add("token", token)
 	resp, err := client.Do(req)
 	if err != nil {
-		glog.Error(err)
+		klog.Error(err)
 		//fmt.Println(err)
 	}
 	defer resp.Body.Close()
 	data, _ := ioutil.ReadAll(resp.Body)
 	result := types.ItemResult{}
 	if err = json.Unmarshal(data, &result); err != nil {
-		glog.Error(err, "Maybe the token is invalide ! ")
+		klog.Error(err, "Maybe the token is invalide ! ")
 		//fmt.Println(err)
 		return types.ItemResult{}, err
 	}

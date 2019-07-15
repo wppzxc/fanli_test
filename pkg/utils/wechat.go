@@ -4,19 +4,19 @@ import (
 	"fmt"
 	"github.com/atotto/clipboard"
 	"github.com/go-vgo/robotgo"
-	"github.com/golang/glog"
 	"github.com/lxn/win"
+	"k8s.io/klog"
 	"syscall"
 )
 
 func SendMessage(msg string, user string) error {
 	if err := clipboard.WriteAll(msg); err != nil {
-		glog.Errorf("Error on write to clipboard : %s", err)
+		klog.Errorf("Error on write to clipboard : %s", err)
 		//fmt.Println("Error on write to clipboard : ", err)
 	}
 	p, err := syscall.UTF16PtrFromString(user)
 	if err != nil {
-		glog.Errorf("Error in get user chat window : %s", err)
+		klog.Errorf("Error in get user chat window : %s", err)
 		//fmt.Println("Error in get user chat window : ", err)
 		return err
 	}
@@ -25,7 +25,7 @@ func SendMessage(msg string, user string) error {
 	if re {
 		robotgo.KeyTap("v", "ctrl")
 		robotgo.KeyTap("enter")
-		glog.Infof("Success to send msg to user : %s", user)
+		klog.Infof("Success to send msg to user : %s", user)
 		//fmt.Println("Success to send msg to user : ", user)
 		return nil
 	} else {
@@ -33,12 +33,12 @@ func SendMessage(msg string, user string) error {
 	}
 }
 
-func CheckWeChat () bool {
+func CheckWeChat() bool {
 	_, err := robotgo.FindIds("WeChat")
 	if err != nil {
 		return false
 	}
-	glog.Info("Check WeChat OK !")
+	klog.Info("Check WeChat OK !")
 	//fmt.Println("Check WeChat OK !")
 	return true
 }
