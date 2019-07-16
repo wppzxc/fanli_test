@@ -15,30 +15,37 @@ func SendMessage(msg string, user string) error {
 		//fmt.Println("Error on write to clipboard : ", err)
 	}
 	p, err := syscall.UTF16PtrFromString(user)
+	klog.V(9).Infof("get %s window process : %d", user, p)
 	if err != nil {
 		klog.Errorf("Error in get user chat window : %s", err)
-		//fmt.Println("Error in get user chat window : ", err)
 		return err
 	}
 	h2 := win.FindWindow(nil, p)
-	re := win.SetForegroundWindow(h2)
+	klog.V(9).Infof("get HWND of %s : %s", user, h2)
+	var re = false
+	for i := 0; i < 20; i++ {
+		re = win.SetForegroundWindow(h2)
+		if re {
+			klog.V(9).Infof("set process foregroudwindow %d times ok", i)
+			break
+		}
+		klog.Warningf("set process foregroudwindow %d times failed", i)
+	}
 	if re {
 		robotgo.KeyTap("v", "ctrl")
 		robotgo.KeyTap("enter")
 		klog.Infof("Success to send msg to user : %s", user)
-		//fmt.Println("Success to send msg to user : ", user)
 		return nil
 	} else {
-		return fmt.Errorf("Error on get user : %s window ", user)
+		return fmt.Errorf("Error in set window foreground %d in 10 times ", h2)
 	}
 }
 
-func CheckWeChat() bool {
-	_, err := robotgo.FindIds("WeChat")
+func CheckProcess(processName string) bool {
+	_, err := robotgo.FindIds(processName)
 	if err != nil {
 		return false
 	}
-	klog.Info("Check WeChat OK !")
-	//fmt.Println("Check WeChat OK !")
+	klog.Infof("Check %s OK !", processName)
 	return true
 }

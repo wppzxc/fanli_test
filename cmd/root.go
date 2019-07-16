@@ -18,8 +18,8 @@ import (
 	"flag"
 	"github.com/spf13/cobra"
 	"github.com/wpp/fanli_test/pkg/app"
-	"github.com/wpp/fanli_test/pkg/process"
 	"github.com/wpp/fanli_test/pkg/types"
+	"github.com/wpp/fanli_test/pkg/utils"
 	"k8s.io/klog"
 )
 
@@ -38,7 +38,7 @@ to quickly create a Cobra application.`,
 		// Uncomment the following line if your bare application
 		// has an action associated with it:
 		Run: func(cmd *cobra.Command, args []string) {
-			if err := process.ValidateFlags(conf); err != nil {
+			if err := utils.ValidateFlags(conf); err != nil {
 				klog.Error(err)
 				//fmt.Println(err)
 				return
@@ -49,7 +49,8 @@ to quickly create a Cobra application.`,
 	}
 
 	rootCmd.Flags().StringVarP(&conf.Uname, "uname", "u", "", "微信openid")
-	rootCmd.Flags().StringVarP(&conf.ToWeChat, "toWeChat", "t", "", "目的微信用户")
+	rootCmd.Flags().StringVarP(&conf.Process, "process", "p", "WeChat", "目标程序，WeChat 或 TIM 或 腾讯QQ")
+	rootCmd.Flags().StringVarP(&conf.ToWeChat, "toUser", "t", "", "目的用户")
 	rootCmd.Flags().Int64VarP(&conf.Duration, "duration", "d", 5, "刷新库存的间隔")
 	klogFlagset := flag.NewFlagSet("klog", flag.ExitOnError)
 	klog.InitFlags(klogFlagset)

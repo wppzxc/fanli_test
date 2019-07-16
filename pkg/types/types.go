@@ -3,6 +3,7 @@ package types
 type Config struct {
 	Uname    string
 	Password string
+	Process  string
 	//FromEmail string
 	ToEmail  string
 	ToWeChat string
