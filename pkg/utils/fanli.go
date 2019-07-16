@@ -33,7 +33,7 @@ func GetItems(token string, url string) (types.ItemResult, error) {
 		return types.ItemResult{}, err
 	}
 	if result.Count == 0 {
-		return types.ItemResult{}, fmt.Errorf("Error in get premonitor items : no items found ")
+		return types.ItemResult{}, fmt.Errorf("no items found ")
 	}
 	return result, nil
 }

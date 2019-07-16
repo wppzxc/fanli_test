@@ -50,7 +50,7 @@ to quickly create a Cobra application.`,
 
 	rootCmd.Flags().StringVarP(&conf.Uname, "uname", "u", "", "微信openid")
 	rootCmd.Flags().StringVarP(&conf.Process, "process", "p", "WeChat", "目标程序，WeChat 或 TIM 或 腾讯QQ")
-	rootCmd.Flags().StringVarP(&conf.ToWeChat, "toUser", "t", "", "目的用户")
+	rootCmd.Flags().StringSliceVarP(&conf.ToUsers, "toUser", "t", nil, "目的用户,多个用户用','分隔")
 	rootCmd.Flags().Int64VarP(&conf.Duration, "duration", "d", 5, "刷新库存的间隔")
 	klogFlagset := flag.NewFlagSet("klog", flag.ExitOnError)
 	klog.InitFlags(klogFlagset)

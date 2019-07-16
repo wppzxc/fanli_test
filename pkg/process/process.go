@@ -13,7 +13,7 @@ import (
 func StartProcess(conf types.Config, md5Str string, proItems []types.Item, token string) (string, []types.Item) {
 	result, err := utils.GetItems(token, utils.GetProcessUrl)
 	if err != nil {
-		klog.Error(err)
+		klog.Errorf("Error in get process items : %s", err)
 		//fmt.Println(err2)
 		return md5Str, proItems
 	}
@@ -29,35 +29,31 @@ func StartProcess(conf types.Config, md5Str string, proItems []types.Item, token
 		h.Write(dataStr)
 		newMd5Str := hex.EncodeToString(h.Sum(nil))
 		if md5Str == newMd5Str {
-			klog.Warning("The process items are not modify !")
+			klog.Error("The process items are not modify !")
 			//fmt.Println("The items are not modify !")
 			return md5Str, proItems
 		}
 		klog.Info("The process items changed")
-		ok := utils.CheckProcess(conf.Process)
 		diffItems := utils.GetDiffItems(proItems, result.Data)
 		if len(diffItems) == 0 {
-			klog.Warning("But there is no new items !")
+			klog.Error("The process items are modify but there is no new items !")
 			return newMd5Str, result.Data
 		}
-		if ok {
-			for _, i := range diffItems {
-				msg := utils.GetMsg(i)
-				if e := utils.SendMessage(msg, conf.ToWeChat); e != nil {
-					klog.Errorf("Error on send %s msg : %s", conf.Process, e)
-				} else {
-					klog.Infof("Success on send msg to %s !", conf.Process)
-				}
-				time.Sleep(500 * time.Millisecond)
+
+		// send message to users
+		for _, i := range diffItems {
+			msg := utils.GetMsg(i)
+			if e := utils.SendMessage(msg, conf.ToUsers); e != nil {
+				klog.Errorf("Error on send %s msg : %s", conf.Process, e)
+			} else {
+				klog.Infof("Success on send msg to %s !", conf.Process)
 			}
-		} else {
-			klog.Errorf("Check %s health error ! ", conf.Process)
-			//fmt.Println("Check WeChat health error ! ")
+			time.Sleep(200 * time.Millisecond)
 		}
+
 		return newMd5Str, result.Data
 	} else {
 		klog.Info("There is no items !")
-		//fmt.Println("There is no items !")
 		return md5Str, proItems
 	}
 }

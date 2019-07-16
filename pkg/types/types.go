@@ -6,7 +6,7 @@ type Config struct {
 	Process  string
 	//FromEmail string
 	ToEmail  string
-	ToWeChat string
+	ToUsers  []string
 	Duration int64
 }
 

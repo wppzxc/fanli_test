@@ -35,8 +35,12 @@ func AppRun(conf types.Config) {
 }
 
 func start(conf types.Config, md5ProStr string, proItems []types.Item, md5PreStr string, preItems []types.Item, token string) (string, []types.Item, string, []types.Item) {
+	klog.V(9).Infof("input proItems : %v", proItems)
+	klog.V(9).Infof("input preItems : %v", preItems)
 	md5ProStrNew, newProItems := process.StartProcess(conf, md5ProStr, proItems, token)
 	md5PreStrNew, newPreItems := premonitor.StartPremonitor(conf, md5PreStr, preItems, token)
+	klog.V(9).Infof("return proItems : %v", newProItems)
+	klog.V(9).Infof("return preItems : %v", newPreItems)
 	return md5ProStrNew, newProItems, md5PreStrNew, newPreItems
 }
 
