@@ -14,9 +14,8 @@ import (
 
 const (
 	GetTokenUrlPrefix = "http://v2.yituike.com/admin/Weixinm/login?access_token=098f6bcd4621d373cade4e832627b4f6&openid="
-	//"os_Ph0hGJxQNrHmNWrL5xV3nuTuc"
 	//os_Ph0j7eHfGJhowF8E-_kJc1fiM
-//	-u os_Ph0hGJxQNrHmNWrL5xV3nuTuc -w bigben -d 5
+//	-u os_Ph0j7eHfGJhowF8E-_kJc1fiM -w bigben -d 5
 )
 
 func AppRun(conf types.Config) {
@@ -27,16 +26,18 @@ func AppRun(conf types.Config) {
 		klog.Fatal(err)
 	}
 	md5ProStr := "test"
+	proItems := []types.Item{}
 	md5PreStr := "test"
+	preItems := []types.Item{}
 	for range time.Tick(time.Duration(conf.Duration) * time.Second) {
-		md5ProStr, md5PreStr = start(conf, md5ProStr, md5PreStr, token)
+		md5ProStr, proItems, md5PreStr, preItems = start(conf, md5ProStr, proItems, md5PreStr, preItems, token)
 	}
 }
 
-func start(conf types.Config, md5ProStr string, md5PreStr string, token string) (string, string) {
-	md5ProStrNew := process.StartProcess(conf, md5ProStr, token)
-	md5PreStrNew := premonitor.StartPremonitor(conf, md5PreStr, token)
-	return md5ProStrNew, md5PreStrNew
+func start(conf types.Config, md5ProStr string, proItems []types.Item, md5PreStr string, preItems []types.Item, token string) (string, []types.Item, string, []types.Item) {
+	md5ProStrNew, newProItems := process.StartProcess(conf, md5ProStr, proItems, token)
+	md5PreStrNew, newPreItems := premonitor.StartPremonitor(conf, md5PreStr, preItems, token)
+	return md5ProStrNew, newProItems, md5PreStrNew, newPreItems
 }
 
 func getToken(conf types.Config) (string, error) {

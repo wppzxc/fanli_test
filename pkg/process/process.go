@@ -10,40 +10,28 @@ import (
 	"io/ioutil"
 	"k8s.io/klog"
 	"net/http"
+	"time"
 )
 
 const (
 	GetProcessUrl = "http://v2.yituike.com/fans/fans/proxy_goods?state=1&page=1&limit=10"
 	Data          = `{
-   "code": 0,
-   "msg": "",
-   "count": 2,
-   "data": [
-       {
-           "id": 474,
-           "extend_document": "###1张老鼠贴免单来袭\n###拍  3张装付款4.5元（实际发一张老鼠贴）\n###券无代表结束，价格不对不要拍\n### 北京河北地区的  名字需要真实姓名 拍，快递要实名制，不然不返款（切记）\n###有事找群主",
-           "announce_document": "###1张老鼠贴免单来袭\n###拍  3张装付款4.5元（实际发一张老鼠贴）\n###券无代表结束，价格不对不要拍\n### 北京河北地区的  名字需要真实姓名 拍，快递要实名制，不然不返款（切记）\n###有事找群主",
-           "goods_image_url": "http://m.wangshikun.wang/2019_5_22_193117粘鼠板一张1.jpg?imageMogr2/auto-orient/thumbnail/300x300/format/jpg/blur/1x0/quality/75|imageslim",
-           "goods_name": "老鼠贴粘鼠板超强力灭鼠电猫捕鼠神器驱鼠器老鼠板老鼠夹捕鼠笼",
-           "refund_amount": "4.50",
-           "min_group_price": "8.50",
-           "coupon_discount": "4.00",
-           "start_time": 1558454400,
-           "stop_time": 1558540800
-       },
-       {
-           "id": 469,
-           "extend_document": "抢免单了！抢免单了！\n拍【5片10贴缓解眼部疲劳】拍【6份】【付款价格28.7】元\n发货眼贴3袋\n优惠券【1】元没有券代表活动结束，价格不对不要拍\n确认收货五星好评之后，48小时之内自动返款到用户链接端账户余额，点击提现即可返款\n一个人只能拍一次，严禁一人多个账号，重复下单，否则不返款\n任何问题联系群主解决，不要联系商家\n商家不易感谢配合",
-           "announce_document": "抢免单了！抢免单了！\n拍【5片10贴缓解眼部疲劳】拍【6份】【付款价格28.7】元\n发货眼贴3袋\n优惠券【1】元没有券代表活动结束，价格不对不要拍\n确认收货五星好评之后，48小时之内自动返款到用户链接端账户余额，点击提现即可返款\n一个人只能拍一次，严禁一人多个账号，重复下单，否则不返款\n任何问题联系群主解决，不要联系商家\n商家不易感谢配合",
-           "goods_image_url": "http://m.wangshikun.wang/2019_5_22_174418.....jpg?imageMogr2/auto-orient/thumbnail/300x300/format/jpg/blur/1x0/quality/75|imageslim",
-           "goods_name": "【7天淡化黑眼圈】海藻眼膜贴去皱纹5片眼霜眼贴黑眼圈去眼袋眼纹",
-           "refund_amount": "28.70",
-           "min_group_price": "29.70",
-           "coupon_discount": "1.00",
-           "start_time": 1558524600,
-           "stop_time": 1558537200
-       }
-   ]
+    "code": 0,
+    "msg": "",
+    "count": 1,
+    "data": [
+        {
+            "id": 2581,
+            "extend_document": "###拼多多免单来袭请注意看清要求\n###1.领取【1】元券，拍【零痕补水保湿面膜2片】选项，券后【2.8】元拍下\n###2.实发【抽纸一包】\n###3.禁止使用平台券，禁止联系商家咨询\n###4.有任何问题找群主\n###5.券无代表活动结束\n###6.拍完付款后请重新进入活动网址，点订单页面查询是否正常",
+            "goods_image_url": "http://m.wangshikun.wang/2019_7_15_211349微信图片_20190715211150.jpg?imageMogr2/auto-orient/thumbnail/300x300/format/jpg/blur/1x0/quality/75|imageslim",
+            "goods_name": "零痕天丝面膜补水保湿收缩毛孔美白淡斑玻尿酸精华淡化痘印男女",
+            "refund_amount": "2.80",
+            "min_group_price": "3.80",
+            "coupon_discount": "1.00",
+            "start_time": 1563197400,
+            "stop_time": 1563283800
+        }
+    ]
 }`
 )
 
@@ -57,12 +45,12 @@ func ValidateFlags(conf types.Config) error {
 	return nil
 }
 
-func StartProcess(conf types.Config, md5Str string, token string) string {
+func StartProcess(conf types.Config, md5Str string, proItems []types.Item, token string) (string, []types.Item) {
 	result, err := getItems(token)
 	if err != nil {
 		klog.Error(err)
 		//fmt.Println(err2)
-		return md5Str
+		return md5Str, proItems
 	}
 	if result.Count > 0 {
 		klog.Info("There found some process items !")
@@ -78,27 +66,36 @@ func StartProcess(conf types.Config, md5Str string, token string) string {
 		if md5Str == newMd5Str {
 			klog.Info("The process items are not modify !")
 			//fmt.Println("The items are not modify !")
-			return md5Str
+			return md5Str, proItems
 		}
+		klog.Info("The process items changed")
 		ok := utils.CheckWeChat()
+		diffItems := utils.GetDiffItems(proItems, result.Data)
+		if len(diffItems) == 0 {
+			klog.Info("But there is no new items !")
+			klog.V(9).Info("oldItems : ", proItems)
+			klog.V(9).Info("newItems : ", result.Data)
+			return newMd5Str, result.Data
+		}
 		if ok {
-			msg := utils.GetMsg(result)
-			if e := utils.SendMessage(msg, conf.ToWeChat); e != nil {
-				klog.Errorf("Error on send wechat msg : %s", e)
-				//fmt.Println("Error on send wechat msg : ", err)
-			} else {
-				klog.Info("Success on send msg to wechat !")
-				//fmt.Println("Success on send msg to wechat !")
+			for _, i := range diffItems {
+				msg := utils.GetMsg(i)
+				if e := utils.SendMessage(msg, conf.ToWeChat); e != nil {
+					klog.Errorf("Error on send wechat msg : %s", e)
+				} else {
+					klog.Info("Success on send msg to wechat !")
+				}
+				time.Sleep(500 * time.Millisecond)
 			}
 		} else {
 			klog.Error("Check WeChat health error ! ")
 			//fmt.Println("Check WeChat health error ! ")
 		}
-		return newMd5Str
+		return newMd5Str, result.Data
 	} else {
 		klog.Info("There is no items !")
 		//fmt.Println("There is no items !")
-		return md5Str
+		return md5Str, proItems
 	}
 }
 
@@ -119,7 +116,7 @@ func getItems(token string) (types.ItemResult, error) {
 	data, _ := ioutil.ReadAll(resp.Body)
 	result := types.ItemResult{}
 	if err = json.Unmarshal(data, &result); err != nil {
-		klog.Error(err, "Maybe the token is invalide ! ")
+		klog.Errorf("Maybe the token is invalide ! result : %s, error : %s", data, err)
 		//fmt.Println(err)
 		return types.ItemResult{}, err
 	}
