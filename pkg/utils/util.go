@@ -38,18 +38,19 @@ func WordSepNormalizeFunc(f *pflag.FlagSet, name string) pflag.NormalizedName {
 }
 
 func GetDiffItems(oldItems []types.Item, newItems []types.Item) []types.Item {
-	klog.V(9).Infof("Get oldItems : %v", oldItems)
+	klog.V(9).Infof("Get historyItems : %v", oldItems)
 	klog.V(9).Infof("Get newItems : %v", newItems)
 	//result := newItems
 	for _, o := range oldItems {
-		for i, n := range newItems {
-			if o.Id == n.Id {
+		for i:=0; i<len(newItems); i++ {
+			if o.ExtendDocument == newItems[i].ExtendDocument && o.StartTime == newItems[i].StartTime {
 				newItems = append(newItems[:i], newItems[i+1:]...)
+				i--
 				break
 			}
 		}
 	}
-	klog.V(9).Infof("Return resultItems : %v", newItems)
+	klog.V(9).Infof("Return diffItems : %v", newItems)
 	return newItems
 }
 

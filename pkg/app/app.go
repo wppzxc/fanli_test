@@ -20,28 +20,15 @@ const (
 
 func AppRun(conf types.Config) {
 	klog.Info("Start process ... !")
-	//fmt.Println("Start process ... !")
-	token, err := getToken(conf)
-	if err != nil {
-		klog.Fatal(err)
-	}
-	md5ProStr := "test"
-	proItems := []types.Item{}
-	md5PreStr := "test"
-	preItems := []types.Item{}
 	for range time.Tick(time.Duration(conf.Duration) * time.Second) {
-		md5ProStr, proItems, md5PreStr, preItems = start(conf, md5ProStr, proItems, md5PreStr, preItems, token)
+		token, err := getToken(conf)
+		if err != nil {
+			klog.Fatal(err)
+		}
+		klog.V(9).Infof("get the token is %s", token)
+		process.StartProcess(conf, token)
+		premonitor.StartPremonitor(conf, token)
 	}
-}
-
-func start(conf types.Config, md5ProStr string, proItems []types.Item, md5PreStr string, preItems []types.Item, token string) (string, []types.Item, string, []types.Item) {
-	klog.V(9).Infof("input proItems : %v", proItems)
-	klog.V(9).Infof("input preItems : %v", preItems)
-	md5ProStrNew, newProItems := process.StartProcess(conf, md5ProStr, proItems, token)
-	md5PreStrNew, newPreItems := premonitor.StartPremonitor(conf, md5PreStr, preItems, token)
-	klog.V(9).Infof("return proItems : %v", newProItems)
-	klog.V(9).Infof("return preItems : %v", newPreItems)
-	return md5ProStrNew, newProItems, md5PreStrNew, newPreItems
 }
 
 func getToken(conf types.Config) (string, error) {
