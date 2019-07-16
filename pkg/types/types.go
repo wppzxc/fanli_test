@@ -2,10 +2,9 @@ package types
 
 type Config struct {
 	Uname    string
-	Password string
-	Process  string
+	//Password string
 	//FromEmail string
-	ToEmail  string
+	//ToEmail  string
 	ToUsers  []string
 	Duration int64
 }

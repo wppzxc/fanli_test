@@ -38,9 +38,9 @@ func StartProcess(conf types.Config, token string) {
 		for _, i := range diffItems {
 			msg := utils.GetMsg(i)
 			if e := utils.SendMessage(msg, conf.ToUsers); e != nil {
-				klog.Errorf("Error on send %s msg : %s", conf.Process, e)
+				klog.Errorf("Error on send msg : %s", e)
 			} else {
-				klog.Infof("Success on send msg to %s !", conf.Process)
+				klog.Infof("Success on send msg to users %v !", conf.ToUsers)
 				historyItems = append(historyItems, i)
 			}
 			time.Sleep(200 * time.Millisecond)

@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"github.com/atotto/clipboard"
 	"github.com/go-vgo/robotgo"
 	"github.com/lxn/win"
@@ -9,6 +10,7 @@ import (
 )
 
 func SendMessage(msg string, users []string) error {
+	var sendErr error = nil
 	for _, user := range users {
 		if err := clipboard.WriteAll(msg); err != nil {
 			klog.Errorf("Error on write to clipboard : %s", err)
@@ -37,18 +39,10 @@ func SendMessage(msg string, users []string) error {
 			klog.Infof("Success to send msg to user : %s", user)
 			//return nil
 		} else {
-			klog.Errorf("Error in set window foreground %s in 10 times ", user)
+			klog.Errorf("Error in set window foreground %s in 20 times ", user)
+			sendErr = fmt.Errorf("Error in set window foreground %s in 20 times ", user)
 			continue
 		}
 	}
-	return nil
-}
-
-func CheckProcess(processName string) bool {
-	_, err := robotgo.FindIds(processName)
-	if err != nil {
-		return false
-	}
-	klog.Infof("Check %s OK !", processName)
-	return true
+	return sendErr
 }
