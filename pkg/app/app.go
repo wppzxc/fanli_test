@@ -23,7 +23,8 @@ func AppRun(conf types.Config) {
 	for range time.Tick(time.Duration(conf.Duration) * time.Second) {
 		token, err := getToken(conf)
 		if err != nil {
-			klog.Fatal(err)
+			klog.Errorf("Error in get token %s", err)
+			continue
 		}
 		klog.V(9).Infof("get the token is %s", token)
 		process.StartProcess(conf, token)
