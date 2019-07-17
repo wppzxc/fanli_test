@@ -52,8 +52,8 @@ func GetHistoryItems(file string) []types.Item {
 
 func UpdateHistoryItems(items []types.Item) {
 	now := time.Now().Unix()
-	for i:=0; i<len(items); i++ {
-		if items[i].StartTime < now {
+	for i := 0; i < len(items); i++ {
+		if items[i].StopTime < now {
 			items = append(items[:i], items[i+1:]...)
 			i--
 		}
