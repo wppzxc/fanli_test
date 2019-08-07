@@ -5,27 +5,30 @@ import (
 	"github.com/lxn/win"
 	"github.com/spf13/pflag"
 	"github.com/wpp/fanli_test/pkg/types"
+	"gopkg.in/yaml.v2"
+	"io/ioutil"
 	"k8s.io/klog"
+	"os"
 	"strings"
 	"time"
 )
 
 const (
-	msgFormat = `拼多多免单来袭！马上登陆查看！
+	msgFormat = `预告中有新增拼多多免单！欢迎查看！
+拼多多免单来袭！马上登陆查看！
 
 %s
 
 开始时间: %s
 
-免单网址：http://t.cn/E6KHo26
-抢免单，还赚钱，赶快联系客服加入吧！`
+免单网址：%s`
 	timeFormat = "2006-01-02 15:04:05"
 )
 
-func GetMsg(item types.Item) string {
+func GetMsg(item types.Item, link string) string {
 	str := item.ExtendDocument
 	str = strings.Replace(str, "#", "", -1)
-	str = fmt.Sprintf(msgFormat, str, time.Unix(item.StartTime, 0).Format(timeFormat))
+	str = fmt.Sprintf(msgFormat, str, time.Unix(item.StartTime, 0).Format(timeFormat), link)
 	return str
 }
 
@@ -54,14 +57,37 @@ func GetDiffItems(oldItems []types.Item, newItems []types.Item) []types.Item {
 	return newItems
 }
 
-func ValidateFlags(conf types.Config) error {
-	if len(conf.ToUsers) == 0 {
-		return fmt.Errorf("Error, toUser is invalidate ")
+func ValidateConfig(file string) (*types.Config, error) {
+	_, err :=os.Stat(file)
+	if err != nil {
+		return nil, err
 	}
-	if len(conf.Uname) == 0 {
-		return fmt.Errorf("Error, uname is invalidate ")
+	data, err := ioutil.ReadFile(file)
+	if err != nil {
+		return nil, err
 	}
-	return nil
+	config := new(types.Config)
+	if len(data) == 0 {
+		return nil, fmt.Errorf("Error in get data from config file ")
+	}
+	if err := yaml.Unmarshal(data, config); err != nil {
+		return nil, fmt.Errorf("Error in decode config file %s ", err)
+	}
+	if len(config.Auth.Username) == 0 || len(config.Auth.Password) == 0 {
+		return nil, fmt.Errorf("Error in config file, username or password must provide ")
+	}
+	if !config.Fanli.Process.Start && !config.Fanli.Premonitor.Start {
+		return nil, fmt.Errorf("Error in config file, process or premonitor must start one ")
+	}
+	if len(config.Receiver) == 0 {
+		return nil, fmt.Errorf("Error in config file, receiver must provide ")
+	}
+	if config.Fanli.Interval == 0 {
+		klog.Info("The fanli interval get 0, set to default 120 ")
+		config.Fanli.Interval = 120
+	}
+	klog.Info("validate config file ok")
+	return config, nil
 }
 
 func SetForegroundWindow(hWnd win.HWND) bool {

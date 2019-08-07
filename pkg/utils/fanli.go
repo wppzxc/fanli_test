@@ -7,11 +7,7 @@ import (
 	"io/ioutil"
 	"k8s.io/klog"
 	"net/http"
-)
-
-const (
-	GetProcessUrl    = "http://v2.yituike.com/fans/fans/proxy_goods?state=1&page=1&limit=10"
-	GetPremonitorUrl = "http://v2.yituike.com/fans/fans/proxy_goods?state=2&page=1&limit=10"
+	"net/url"
 )
 
 func GetItems(token string, url string) (types.ItemResult, error) {
@@ -20,7 +16,8 @@ func GetItems(token string, url string) (types.ItemResult, error) {
 	if err != nil {
 		klog.Error(err)
 	}
-	req.Header.Add("token", token)
+	//req.Header.Add("token", token)
+	req.Header.Set("token", token)
 	resp, err := client.Do(req)
 	if err != nil {
 		klog.Error(err)
@@ -29,11 +26,37 @@ func GetItems(token string, url string) (types.ItemResult, error) {
 	data, _ := ioutil.ReadAll(resp.Body)
 	result := types.ItemResult{}
 	if err = json.Unmarshal(data, &result); err != nil {
-		klog.Errorf("Maybe the token is invalide !  result : %s, error : %s", data, err)
+		if result.Count == "" {
+			err = fmt.Errorf("There is no goods found ")
+		}
 		return types.ItemResult{}, err
 	}
-	if result.Count == 0 {
+	if result.Count == "0" {
 		return types.ItemResult{}, fmt.Errorf("no items found ")
 	}
 	return result, nil
+}
+
+func GetToken(auth *types.AuthInfo) (string, error) {
+	
+	data := make(url.Values)
+	data["account"] = []string{auth.Username}
+	data["password"] = []string{auth.Password}
+	resp, err := http.PostForm(auth.Url, data)
+	if err != nil {
+		klog.Error(err)
+		//fmt.Println(err)
+	}
+	defer resp.Body.Close()
+	d, _ := ioutil.ReadAll(resp.Body)
+	result := new(types.TokenResult)
+	err = json.Unmarshal(d, result)
+	if err != nil {
+		klog.Error(err)
+		//fmt.Println(err)
+	}
+	if result.Code != 0 {
+		return "", fmt.Errorf("Error in get token : %s ", err)
+	}
+	return result.Data[0].Token, nil
 }

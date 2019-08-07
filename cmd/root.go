@@ -16,16 +16,23 @@ package cmd
 
 import (
 	"flag"
+	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/wpp/fanli_test/pkg/app"
-	"github.com/wpp/fanli_test/pkg/types"
+	"github.com/wpp/fanli_test/pkg/premonitor"
+	"github.com/wpp/fanli_test/pkg/process"
 	"github.com/wpp/fanli_test/pkg/utils"
 	"k8s.io/klog"
+	"os"
+)
+
+var (
+	version bool
+	config string
 )
 
 func NewRootCommand() *cobra.Command {
 
-	conf := types.Config{}
 	rootCmd := &cobra.Command{
 		Use:   "fanli_test",
 		Short: "A brief description of your application",
@@ -38,19 +45,34 @@ to quickly create a Cobra application.`,
 		// Uncomment the following line if your bare application
 		// has an action associated with it:
 		Run: func(cmd *cobra.Command, args []string) {
-			if err := utils.ValidateFlags(conf); err != nil {
-				klog.Error(err)
-				//fmt.Println(err)
-				return
+			if version {
+				fmt.Print("fanli.exe : v0.0.1")
+				os.Exit(0)
 			}
-			klog.Infof("The config is : %#v", conf)
-			app.AppRun(conf)
+			conf, err := utils.ValidateConfig(config)
+			if err != nil {
+				klog.Fatal(err)
+			}
+			fs := []func(){}
+			if conf.Fanli.Process.Start {
+				pro := process.Processer{
+					Config: conf,
+				}
+				klog.Info("register process ")
+				fs = append(fs, pro.StartProcess)
+			}
+			if conf.Fanli.Premonitor.Start {
+				pre := premonitor.Premonitor{
+					Config: conf,
+				}
+				klog.Info("register premonitor ")
+				fs = append(fs, pre.StartPremonitor)
+			}
+			app.AppRun(conf, fs)
 		},
 	}
-
-	rootCmd.Flags().StringVarP(&conf.Uname, "uname", "u", "", "微信openid")
-	rootCmd.Flags().StringSliceVarP(&conf.ToUsers, "toUser", "t", nil, "目的用户,多个用户用','分隔")
-	rootCmd.Flags().Int64VarP(&conf.Duration, "duration", "d", 5, "刷新库存的间隔")
+	rootCmd.Flags().BoolVar(&version, "version", false, "The version of fanli.exe")
+	rootCmd.Flags().StringVar(&config, "config", "", "The config file of fanli.exe")
 	klogFlagset := flag.NewFlagSet("klog", flag.ExitOnError)
 	klog.InitFlags(klogFlagset)
 	rootCmd.Flags().AddGoFlagSet(klogFlagset)

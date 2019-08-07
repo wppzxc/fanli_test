@@ -6,6 +6,24 @@ import (
 	"github.com/wpp/fanli_test/pkg/types"
 	"syscall"
 	"testing"
+	"time"
+)
+
+var (
+	user32           = syscall.MustLoadDLL("user32")
+	openClipboard    = user32.MustFindProc("OpenClipboard")
+	closeClipboard   = user32.MustFindProc("CloseClipboard")
+	emptyClipboard   = user32.MustFindProc("EmptyClipboard")
+	getClipboardData = user32.MustFindProc("GetClipboardData")
+	setClipboardData = user32.MustFindProc("SetClipboardData")
+	loadImage        = user32.MustFindProc("LoadImageW")
+	
+	kernel32     = syscall.NewLazyDLL("kernel32")
+	globalAlloc  = kernel32.NewProc("GlobalAlloc")
+	globalFree   = kernel32.NewProc("GlobalFree")
+	globalLock   = kernel32.NewProc("GlobalLock")
+	globalUnlock = kernel32.NewProc("GlobalUnlock")
+	lstrcpy      = kernel32.NewProc("lstrcpyW")
 )
 
 func Test01(t *testing.T) {
@@ -97,7 +115,7 @@ func Test02(t *testing.T) {
 		StartTime:      1563197400,
 		StopTime:       1563283800,
 	}}
-
+	
 	result := GetDiffItems(oldItems, newItems)
 	fmt.Println(result)
 }
@@ -187,4 +205,62 @@ func TestGetDiffItems(t *testing.T) {
 		}
 	}
 	fmt.Println(result)
+}
+
+func TestSetClipboardImage(t *testing.T) {
+	location, err := syscall.UTF16PtrFromString("C:\\Users\\wupengpeng\\Desktop\\kube-scheduler.jpg")
+	if err != nil {
+		fmt.Println(err)
+	}
+	imgH := win.LoadImage(0,
+		location,
+		win.IMAGE_BITMAP, 0, 0,
+		win.LR_LOADFROMFILE)
+	win.OpenClipboard(0)
+	win.EmptyClipboard()
+	win.SetClipboardData(win.CF_BITMAP, imgH)
+	win.CloseClipboard()
+}
+
+func TestSetClipboardImage02(t *testing.T) {
+	err := waitOpenClipboard()
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer closeClipboard.Call()
+	
+	r, _, err := emptyClipboard.Call(0)
+	if r == 0 {
+		fmt.Println(err)
+	}
+	location, err := syscall.UTF16PtrFromString("C:\\Users\\wupengpeng\\Desktop\\kube-scheduler.jpg")
+	if err != nil {
+		fmt.Println(err)
+	}
+	
+	imgH, _, err := loadImage.Call(0,
+		uintptr(*location),
+		win.IMAGE_BITMAP, 0, 0,
+		win.LR_LOADFROMFILE)
+	
+	r, _, err = setClipboardData.Call(win.CF_BITMAP, imgH)
+	if r == 0 {
+		fmt.Println(err)
+	}
+	
+}
+
+func waitOpenClipboard() error {
+	started := time.Now()
+	limit := started.Add(time.Second)
+	var r uintptr
+	var err error
+	for time.Now().Before(limit) {
+		r, _, err = openClipboard.Call(0)
+		if r != 0 {
+			return nil
+		}
+		time.Sleep(time.Millisecond)
+	}
+	return err
 }

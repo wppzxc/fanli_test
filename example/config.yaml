@@ -1,0 +1,17 @@
+auth:
+  username: "18330179404"
+  password: "bigben100"
+  url: "http://v2.yituike.com/index/login/login"
+receiver:
+  - name: "user1"
+    link: "http://asdf.com"
+  - name: "user2"
+    link: "http://qwer.com"
+fanli:
+  interval: 20
+  process:
+    url: "http://v2.yituike.com/admin/goods/goods_store?limit=100&page=1&state=1"
+    start: false
+  premonitor:
+    url: "http://v2.yituike.com/admin/goods/goods_store?limit=100&page=1&state=2"
+    start: true
