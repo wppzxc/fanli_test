@@ -3,10 +3,10 @@ auth:
   password: "bigben100"
   url: "http://v2.yituike.com/index/login/login"
 receiver:
-  - name: "user1"
-    link: "http://asdf.com"
-  - name: "user2"
-    link: "http://qwer.com"
+  - name: "bigben"
+    link: "http://bigben.com"
+  - name: "武林风"
+    link: "http://wulinfeng.com"
 fanli:
   interval: 20
   process:

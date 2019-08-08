@@ -26,13 +26,7 @@ func GetItems(token string, url string) (types.ItemResult, error) {
 	data, _ := ioutil.ReadAll(resp.Body)
 	result := types.ItemResult{}
 	if err = json.Unmarshal(data, &result); err != nil {
-		if result.Count == "" {
-			err = fmt.Errorf("There is no goods found ")
-		}
 		return types.ItemResult{}, err
-	}
-	if result.Count == "0" {
-		return types.ItemResult{}, fmt.Errorf("no items found ")
 	}
 	return result, nil
 }

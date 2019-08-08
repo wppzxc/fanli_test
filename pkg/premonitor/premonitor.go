@@ -5,7 +5,6 @@ import (
 	"github.com/wpp/fanli_test/pkg/types"
 	"github.com/wpp/fanli_test/pkg/utils"
 	"k8s.io/klog"
-	"strconv"
 	"time"
 )
 
@@ -34,12 +33,7 @@ func (p *Premonitor) StartPremonitor() {
 		klog.Errorf("Error in get premonitor items : %s", err)
 		return
 	}
-	count, err := strconv.Atoi(result.Count)
-	if err != nil {
-		klog.Errorf("Error in decode result.Count to int %s", result.Count)
-		return
-	}
-	if count > 0 {
+	if result.Count > 0 {
 		klog.Info("There found some premonitor items !")
 		
 		diffItems := utils.GetDiffItems(historyItems, result.Data)
@@ -56,6 +50,7 @@ func (p *Premonitor) StartPremonitor() {
 		// send message to users
 		for _, u := range p.Config.Receiver {
 			msg := utils.GetMsg(diffItems[0], u.Link)
+			klog.Infof("msg is : %s", msg)
 			if err := utils.SendMessage(msg, u.Name); err != nil {
 				klog.Errorf("Error on send msg : %s", err)
 			} else {

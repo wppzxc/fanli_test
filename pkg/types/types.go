@@ -37,7 +37,7 @@ type recInfo struct {
 type ItemResult struct {
 	Code  int    `json:"code"`
 	Msg   string `json:"msg"`
-	Count string `json:"count"`
+	Count int `json:"count"`
 	Data  []Item `json:"data,omitempty"`
 }
 

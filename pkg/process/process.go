@@ -5,7 +5,6 @@ import (
 	"github.com/wpp/fanli_test/pkg/types"
 	"github.com/wpp/fanli_test/pkg/utils"
 	"k8s.io/klog"
-	"strconv"
 	"time"
 )
 
@@ -34,12 +33,7 @@ func (p *Processer) StartProcess() {
 		klog.Errorf("Error in get process items : %s", err)
 		return
 	}
-	count, err := strconv.Atoi(result.Count)
-	if err != nil {
-		klog.Errorf("Error in decode result.Count to int %s", result.Count)
-		return
-	}
-	if count > 0 {
+	if result.Count > 0 {
 		klog.Info("There found some process items !")
 		
 		diffItems := utils.GetDiffItems(historyItems, result.Data)
