@@ -49,11 +49,17 @@ func (p *Processer) StartProcess() {
 		
 		// send message to users
 		for _, u := range p.Config.Receiver {
+			if err := utils.SendImage(diffItems[0].GoodsImageUrl, u); err != nil {
+				klog.Errorf("Error in send image to user %s", err)
+			} else {
+				klog.Infof("Success on send image to user %s ", u.Name)
+			}
+			
 			msg := utils.GetMsg(diffItems[0], u.Link)
 			if err := utils.SendMessage(msg, u.Name); err != nil {
 				klog.Errorf("Error on send msg : %s", err)
 			} else {
-				klog.Infof("Success on send msg to users %v !", u.Name)
+				klog.Infof("Success on send msg to users %s ", u.Name)
 			}
 			time.Sleep(200 * time.Millisecond)
 		}

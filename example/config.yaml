@@ -5,8 +5,10 @@ auth:
 receiver:
   - name: "bigben"
     link: "http://bigben.com"
+    skipimage: false
   - name: "武林风"
     link: "http://wulinfeng.com"
+    skipimage: true
 fanli:
   interval: 20
   process:

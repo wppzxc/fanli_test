@@ -22,31 +22,27 @@ import (
 	"github.com/wpp/fanli_test/pkg/premonitor"
 	"github.com/wpp/fanli_test/pkg/process"
 	"github.com/wpp/fanli_test/pkg/utils"
+	appVersion "github.com/wpp/fanli_test/pkg/version"
 	"k8s.io/klog"
 	"os"
 )
 
 var (
 	version bool
-	config string
+	config  string
 )
 
 func NewRootCommand() *cobra.Command {
-
+	
 	rootCmd := &cobra.Command{
-		Use:   "fanli_test",
-		Short: "A brief description of your application",
-		Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+		Use:   "fanli.exe",
+		Short: "Used to get process or premonitor items and send it to users",
+		Long:  `There is no description of the fanli.exe`,
 		// Uncomment the following line if your bare application
 		// has an action associated with it:
 		Run: func(cmd *cobra.Command, args []string) {
 			if version {
-				fmt.Print("fanli.exe : v0.0.1")
+				fmt.Print("fanli.exe : %s ", appVersion.Get())
 				os.Exit(0)
 			}
 			conf, err := utils.ValidateConfig(config)

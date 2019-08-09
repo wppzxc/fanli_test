@@ -30,7 +30,7 @@ func (p *Premonitor) StartPremonitor() {
 	token, err := utils.GetToken(&p.Config.Auth)
 	result, err := utils.GetItems(token, p.Config.Fanli.Premonitor.Url)
 	if err != nil {
-		klog.Errorf("Error in get premonitor items : %s", err)
+		klog.Warningf("Error in get premonitor items : %s, maybe there is no items found ", err)
 		return
 	}
 	if result.Count > 0 {
@@ -49,6 +49,12 @@ func (p *Premonitor) StartPremonitor() {
 
 		// send message to users
 		for _, u := range p.Config.Receiver {
+			if err := utils.SendImage(diffItems[0].GoodsImageUrl, u); err != nil {
+				klog.Errorf("Error in send image to user %s", err)
+			} else {
+				klog.Infof("Success on send image to user %s ", u.Name)
+			}
+			
 			msg := utils.GetMsg(diffItems[0], u.Link)
 			klog.Infof("msg is : %s", msg)
 			if err := utils.SendMessage(msg, u.Name); err != nil {

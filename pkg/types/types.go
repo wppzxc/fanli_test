@@ -2,7 +2,7 @@ package types
 
 type Config struct {
 	Auth     AuthInfo  `json:"auth"`
-	Receiver []recInfo `json:"receiver"`
+	Receiver []RecInfo `json:"receiver"`
 	Fanli    FanliInfo `json:"fanli"`
 }
 
@@ -28,16 +28,17 @@ type Premonitor struct {
 	Start bool   `json:"start"`
 }
 
-type recInfo struct {
-	Name string `json:"name"`
-	Link string `json:"link"`
+type RecInfo struct {
+	Name      string `json:"name"`
+	Link      string `json:"link"`
+	SkipImage bool   `json:"skipimage"`
 }
 
 // {"code":1,"msg":"暂无数据！","count":"","data":""}
 type ItemResult struct {
 	Code  int    `json:"code"`
 	Msg   string `json:"msg"`
-	Count int `json:"count"`
+	Count int    `json:"count"`
 	Data  []Item `json:"data,omitempty"`
 }
 
