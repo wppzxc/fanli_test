@@ -82,9 +82,13 @@ func ValidateConfig(file string) (*types.Config, error) {
 	if len(config.Receiver) == 0 {
 		return nil, fmt.Errorf("Error in config file, receiver must provide ")
 	}
-	if config.Fanli.Interval == 0 {
+	if config.Fanli.RefreshInterval == 0 {
 		klog.Info("The fanli interval get 0, set to default 120 ")
-		config.Fanli.Interval = 120
+		config.Fanli.RefreshInterval = 120
+	}
+	if config.Fanli.SendInterval == 0 {
+		klog.Info("The fanli interval get 0, set to default 120 ")
+		config.Fanli.SendInterval = 1
 	}
 	klog.Info("validate config file ok")
 	return config, nil

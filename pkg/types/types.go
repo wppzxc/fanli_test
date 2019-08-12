@@ -13,7 +13,8 @@ type AuthInfo struct {
 }
 
 type FanliInfo struct {
-	Interval   int64 `json:"interval"`
+	RefreshInterval   int64 `json:"refreshinterval"`
+	SendInterval   int64 `json:"sendinterval"`
 	Process    `json:"process"`
 	Premonitor `json:"premonitor"`
 }

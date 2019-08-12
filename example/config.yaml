@@ -6,8 +6,15 @@ receiver:
   - name: "拼多多互砍~201"
     link: "http://拼多多互砍~201.com"
     skipimage: false
+  - name: "bigben"
+    link: "http://拼多多互砍~201.com"
+    skipimage: false
+  - name: "拼多多互砍~201"
+    link: "http://拼多多互砍~201.com"
+    skipimage: false
 fanli:
-  interval: 20
+  refreshinterval: 20
+  sendinterval: 1
   process:
     url: "http://v2.yituike.com/admin/goods/goods_store?limit=100&page=1&state=1"
     start: false

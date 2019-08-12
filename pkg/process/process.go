@@ -61,7 +61,7 @@ func (p *Processer) StartProcess() {
 			} else {
 				klog.Infof("Success on send msg to users %s ", u.Name)
 			}
-			time.Sleep(200 * time.Millisecond)
+			time.Sleep(time.Duration(p.Config.Fanli.SendInterval) * time.Second)
 		}
 	} else {
 		klog.Info("There is no items !")

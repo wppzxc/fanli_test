@@ -18,7 +18,7 @@ func AppRun(conf *types.Config, fs []func()) {
 	
 	klog.Info("Starting fanli ... ")
 	for _, f := range fs {
-		go wait.Until(f, time.Duration(conf.Fanli.Interval) * time.Second, stopCh)
+		go wait.Until(f, time.Duration(conf.Fanli.RefreshInterval) * time.Second, stopCh)
 	}
 	
 	klog.Info("Started fanli")
