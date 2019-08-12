@@ -76,7 +76,7 @@ func send(user string) error {
 			klog.V(9).Infof("set process foregroudwindow %d times ok", i)
 			break
 		}
-		klog.Warningf("set process foregroudwindow %d times failed", i)
+		klog.V(9).Infof("set process foregroudwindow %d times failed", i)
 	}
 	if ok {
 		robotgo.KeyTap("v", "ctrl")

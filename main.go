@@ -30,7 +30,6 @@ func main() {
 	command.Flags().MarkHidden("log-backtrace-at")
 	command.Flags().MarkHidden("log-dir")
 	command.Flags().MarkHidden("logtostderr")
-	command.Flags().MarkHidden("alsologtostderr")
 	command.Flags().MarkHidden("skip-headers")
 	command.Flags().MarkHidden("skip-log-headers")
 	if err := command.Execute(); err != nil {

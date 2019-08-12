@@ -24,6 +24,9 @@ func GetItems(token string, url string) (types.ItemResult, error) {
 	}
 	defer resp.Body.Close()
 	data, _ := ioutil.ReadAll(resp.Body)
+	if data[0] != '{' {
+		klog.Errorf("Error in get premonitor items, the response data is %s", data)
+	}
 	result := types.ItemResult{}
 	if err = json.Unmarshal(data, &result); err != nil {
 		return types.ItemResult{}, err
@@ -43,6 +46,9 @@ func GetToken(auth *types.AuthInfo) (string, error) {
 	}
 	defer resp.Body.Close()
 	d, _ := ioutil.ReadAll(resp.Body)
+	if d[0] != '{' {
+		klog.Errorf("Error in get Token, the result of token is %s", d)
+	}
 	result := new(types.TokenResult)
 	err = json.Unmarshal(d, result)
 	if err != nil {
