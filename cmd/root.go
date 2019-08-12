@@ -42,7 +42,7 @@ func NewRootCommand() *cobra.Command {
 		// has an action associated with it:
 		Run: func(cmd *cobra.Command, args []string) {
 			if version {
-				fmt.Print("fanli.exe : %s ", appVersion.Get())
+				fmt.Print("fanli.exe : ", appVersion.Get())
 				os.Exit(0)
 			}
 			conf, err := utils.ValidateConfig(config)

@@ -56,7 +56,7 @@ func (p *Premonitor) StartPremonitor() {
 			}
 			
 			msg := utils.GetMsg(diffItems[0], u.Link)
-			klog.Infof("msg is : %s", msg)
+			klog.V(3).Infof("msg is : %s", msg)
 			if err := utils.SendMessage(msg, u.Name); err != nil {
 				klog.Errorf("Error on send msg : %s", err)
 			} else {

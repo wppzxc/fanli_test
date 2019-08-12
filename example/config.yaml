@@ -3,12 +3,9 @@ auth:
   password: "bigben100"
   url: "http://v2.yituike.com/index/login/login"
 receiver:
-  - name: "bigben"
-    link: "http://bigben.com"
+  - name: "拼多多互砍~201"
+    link: "http://拼多多互砍~201.com"
     skipimage: false
-  - name: "武林风"
-    link: "http://wulinfeng.com"
-    skipimage: true
 fanli:
   interval: 20
   process:
