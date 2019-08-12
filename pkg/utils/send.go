@@ -25,11 +25,11 @@ func SendMessage(msg string, user string) error {
 	if err := clipboard.WriteAll(msg); err != nil {
 		return fmt.Errorf("Error on write to clipboard : %s ", err)
 	}
-	
+
 	if err := send(user); err != nil {
 		return err
 	}
-	
+
 	return nil
 }
 
@@ -38,22 +38,22 @@ func SendImage(url string, user types.RecInfo) error {
 		klog.Infof("skip send image to user %s", user.Name)
 		return nil
 	}
-	
+
 	if len(url) == 0 {
 		return fmt.Errorf("Image URL is empty ")
 	}
-	
+
 	tmpfile, err := saveImage(url)
 	if err != nil {
 		return err
 	}
 	defer os.Remove(tmpfile.Name())
-	
+
 	_, err = exec.Command("file2clip", tmpfile.Name()).CombinedOutput()
 	if err != nil {
-		return fmt.Errorf("Error in save image to clipboard %s ",)
+		return fmt.Errorf("Error in save image to clipboard %s ", err)
 	}
-	
+
 	if err := send(user.Name); err != nil {
 		return err
 	}
@@ -98,17 +98,17 @@ func saveImage(url string) (*os.File, error) {
 	if len(body) == 0 {
 		return nil, fmt.Errorf("Error in download image, image is null ")
 	}
-	
+
 	tmpfile, err := os.Create("./fanli_image" + time.Now().Format(fileFormat) + ".png")
 	if err != nil {
 		return nil, fmt.Errorf("Error in create temp file %s ", err)
 	}
 	defer tmpfile.Close()
-	
+
 	_, err = io.Copy(tmpfile, bytes.NewReader(body))
 	if err != nil {
 		return nil, fmt.Errorf("Error in save image to tmpfile %s ", err)
 	}
-	
+
 	return tmpfile, nil
 }
