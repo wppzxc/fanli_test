@@ -29,6 +29,10 @@ func (p *Premonitor) StartPremonitor() {
 	}()
 
 	token, err := utils.GetToken(&p.Config.Auth)
+	if err != nil {
+		klog.Error(err)
+		return
+	}
 	result, err := utils.GetItems(token, p.Config.Fanli.Premonitor.Url)
 	if err != nil {
 		klog.Warningf("Error in get premonitor items : %s, maybe there is no items found ", err)

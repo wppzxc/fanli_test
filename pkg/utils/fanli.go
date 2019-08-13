@@ -26,6 +26,7 @@ func GetItems(token string, url string) (types.ItemResult, error) {
 	data, _ := ioutil.ReadAll(resp.Body)
 	if data[0] != '{' {
 		klog.Errorf("Error in get premonitor items, the response data is %s", data)
+		return types.ItemResult{}, fmt.Errorf("Error in get premonitor items, the response data is %s ", data)
 	}
 	result := types.ItemResult{}
 	if err = json.Unmarshal(data, &result); err != nil {
@@ -35,7 +36,7 @@ func GetItems(token string, url string) (types.ItemResult, error) {
 }
 
 func GetToken(auth *types.AuthInfo) (string, error) {
-	
+
 	data := make(url.Values)
 	data["account"] = []string{auth.Username}
 	data["password"] = []string{auth.Password}
@@ -48,6 +49,7 @@ func GetToken(auth *types.AuthInfo) (string, error) {
 	d, _ := ioutil.ReadAll(resp.Body)
 	if d[0] != '{' {
 		klog.Errorf("Error in get Token, the result of token is %s", d)
+		return "", fmt.Errorf("Error in get Token, the result of token is %s ", d)
 	}
 	result := new(types.TokenResult)
 	err = json.Unmarshal(d, result)
