@@ -5,6 +5,7 @@ import (
 	"github.com/wpp/fanli_test/pkg/types"
 	"github.com/wpp/fanli_test/pkg/utils"
 	"k8s.io/klog"
+	"os"
 	"time"
 )
 
@@ -46,10 +47,16 @@ func (p *Premonitor) StartPremonitor() {
 		for _, i := range diffItems {
 			historyItems = append(historyItems, i)
 		}
+		
+		tmpfile, err := utils.SaveImage(diffItems[0].GoodsImageUrl)
+		if err != nil {
+			klog.Errorf("Error in download image %s", err)
+		}
+		defer os.Remove(tmpfile.Name())
 
 		// send message to users
 		for _, u := range p.Config.Receiver {
-			if err := utils.SendImage(diffItems[0].GoodsImageUrl, u); err != nil {
+			if err := utils.SendImage(tmpfile, u); err != nil {
 				klog.Errorf("Error in send image to user %s", err)
 			} else {
 				klog.Infof("Success on send image to user %s ", u.Name)

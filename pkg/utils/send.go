@@ -33,23 +33,13 @@ func SendMessage(msg string, user string) error {
 	return nil
 }
 
-func SendImage(url string, user types.RecInfo) error {
+func SendImage(img *os.File, user types.RecInfo) error {
 	if user.SkipImage {
-		klog.Infof("skip send image to user %s", user.Name)
+		klog.V(3).Infof("skip send image to user %s", user.Name)
 		return nil
 	}
 
-	if len(url) == 0 {
-		return fmt.Errorf("Image URL is empty ")
-	}
-
-	tmpfile, err := saveImage(url)
-	if err != nil {
-		return err
-	}
-	defer os.Remove(tmpfile.Name())
-
-	_, err = exec.Command("file2clip", tmpfile.Name()).CombinedOutput()
+	_, err := exec.Command("file2clip", img.Name()).CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("Error in save image to clipboard %s ", err)
 	}
@@ -69,8 +59,11 @@ func send(user string) error {
 	}
 	h2 := win.FindWindow(nil, p)
 	klog.V(9).Infof("get HWND of %s : %v", user, h2)
+	if h2 == 0 {
+		return fmt.Errorf("Error in get user %s, user not found ", user)
+	}
 	var ok = false
-	for i := 0; i < 20; i++ {
+	for i := 0; i < 10; i++ {
 		ok = SetForegroundWindow(h2)
 		if ok {
 			klog.V(9).Infof("set process foregroudwindow %d times ok", i)
@@ -84,12 +77,12 @@ func send(user string) error {
 		klog.Infof("Success to send msg to user : %s", user)
 		//return nil
 	} else {
-		return fmt.Errorf("Error in set window foreground %s in 20 times ", user)
+		return fmt.Errorf("Error in set window foreground %s in 10 times ", user)
 	}
 	return nil
 }
 
-func saveImage(url string) (*os.File, error) {
+func SaveImage(url string) (*os.File, error) {
 	resp, err := http.Get(url)
 	if err != nil {
 		return nil, fmt.Errorf("Error in download image %s ", err)
