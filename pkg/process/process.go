@@ -59,7 +59,7 @@ func (p *Processer) StartProcess() {
 		defer os.Remove(tmpfile.Name())
 
 		// send message to users
-		for _, u := range p.Config.Receiver {
+		for _, u := range p.Config.Receivers {
 			if err := utils.SendImage(tmpfile, u); err != nil {
 				klog.Errorf("Error in send image to user %s", err)
 			} else {

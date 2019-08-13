@@ -5,10 +5,10 @@ import (
 	"github.com/lxn/win"
 	"github.com/spf13/pflag"
 	"github.com/wpp/fanli_test/pkg/types"
-	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"k8s.io/klog"
 	"os"
+	"sigs.k8s.io/yaml"
 	"strings"
 	"time"
 )
@@ -45,7 +45,7 @@ func GetDiffItems(oldItems []types.Item, newItems []types.Item) []types.Item {
 	klog.V(9).Infof("Get newItems : %v", newItems)
 	//result := newItems
 	for _, o := range oldItems {
-		for i:=0; i<len(newItems); i++ {
+		for i := 0; i < len(newItems); i++ {
 			if o.ExtendDocument == newItems[i].ExtendDocument && o.StartTime == newItems[i].StartTime {
 				newItems = append(newItems[:i], newItems[i+1:]...)
 				i--
@@ -58,7 +58,7 @@ func GetDiffItems(oldItems []types.Item, newItems []types.Item) []types.Item {
 }
 
 func ValidateConfig(file string) (*types.Config, error) {
-	_, err :=os.Stat(file)
+	_, err := os.Stat(file)
 	if err != nil {
 		return nil, err
 	}
@@ -66,10 +66,10 @@ func ValidateConfig(file string) (*types.Config, error) {
 	if err != nil {
 		return nil, err
 	}
-	config := new(types.Config)
 	if len(data) == 0 {
 		return nil, fmt.Errorf("Error in get data from config file ")
 	}
+	config := new(types.Config)
 	if err := yaml.Unmarshal(data, config); err != nil {
 		return nil, fmt.Errorf("Error in decode config file %s ", err)
 	}
@@ -79,7 +79,7 @@ func ValidateConfig(file string) (*types.Config, error) {
 	if !config.Fanli.Process.Start && !config.Fanli.Premonitor.Start {
 		return nil, fmt.Errorf("Error in config file, process or premonitor must start one ")
 	}
-	if len(config.Receiver) == 0 {
+	if len(config.Receivers) == 0 {
 		return nil, fmt.Errorf("Error in config file, receiver must provide ")
 	}
 	if config.Fanli.RefreshInterval == 0 {

@@ -1,9 +1,9 @@
 package types
 
 type Config struct {
-	Auth     AuthInfo  `json:"auth"`
-	Receiver []RecInfo `json:"receiver"`
-	Fanli    FanliInfo `json:"fanli"`
+	Auth      AuthInfo  `json:"auth"`
+	Receivers []RecInfo `json:"receivers"`
+	Fanli     FanliInfo `json:"fanli"`
 }
 
 type AuthInfo struct {
@@ -13,10 +13,10 @@ type AuthInfo struct {
 }
 
 type FanliInfo struct {
-	RefreshInterval   int64 `json:"refreshinterval"`
-	SendInterval   int64 `json:"sendinterval"`
-	Process    `json:"process"`
-	Premonitor `json:"premonitor"`
+	RefreshInterval int64      `json:"refreshInterval"`
+	SendInterval    int64      `json:"sendInterval"`
+	Process         Process    `json:"process"`
+	Premonitor      Premonitor `json:"premonitor"`
 }
 
 type Process struct {
@@ -32,7 +32,7 @@ type Premonitor struct {
 type RecInfo struct {
 	Name      string `json:"name"`
 	Link      string `json:"link"`
-	SkipImage bool   `json:"skipimage"`
+	SkipImage bool   `json:"skipImage"`
 }
 
 // {"code":1,"msg":"暂无数据！","count":"","data":""}

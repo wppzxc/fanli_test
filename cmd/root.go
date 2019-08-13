@@ -33,7 +33,7 @@ var (
 )
 
 func NewRootCommand() *cobra.Command {
-	
+
 	rootCmd := &cobra.Command{
 		Use:   "fanli.exe",
 		Short: "Used to get process or premonitor items and send it to users",
@@ -64,7 +64,7 @@ func NewRootCommand() *cobra.Command {
 				klog.Info("register premonitor ")
 				fs = append(fs, pre.StartPremonitor)
 			}
-			app.AppRun(conf, fs)
+			app.Start(conf, fs)
 		},
 	}
 	rootCmd.Flags().BoolVar(&version, "version", false, "The version of fanli.exe")

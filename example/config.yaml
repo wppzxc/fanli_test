@@ -1,20 +1,20 @@
 auth:
   username: "18330179404"
   password: "bigben100"
-  url: "http://v2.yituike.com/index/login/login"
-receiver:
+  url: "http://v2.yituike.com/index/login/indexlogin"
+receivers:
   - name: "拼多多互砍~201"
     link: "http://拼多多互砍~201.com"
-    skipimage: false
+    skipImage: false
   - name: "bigben"
     link: "http://拼多多互砍~201.com"
-    skipimage: false
+    skipImage: true
   - name: "拼多多互砍~201"
     link: "http://拼多多互砍~201.com"
-    skipimage: false
+    skipImage: false
 fanli:
-  refreshinterval: 20
-  sendinterval: 1
+  refreshInterval: 20
+  sendInterval: 1
   process:
     url: "http://v2.yituike.com/admin/goods/goods_store?limit=100&page=1&state=1"
     start: false
