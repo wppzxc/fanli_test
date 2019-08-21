@@ -1,0 +1,72 @@
+<!DOCTYPE HTML>
+<html lang="zh">
+<head>
+    <title>淘客易</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+</head>
+<body>
+<h1>淘客易</h1>
+<button id="btn" itemId="0" onclick="onClick()">拉取</button>
+<h3>链接地址：</h3>
+<p id="items"></p>
+<script type="text/javascript">
+    // document.write("Hello World!")
+    const url = "https://www.tkeasy.com/Interface/search";
+
+    function onClick() {
+        let btn = document.getElementById("btn");
+        let id = btn.attributes["itemId"].value;
+        let oldContent = document.getElementById("items").innerText;
+        console.log("init id is :", id);
+        let items = [];
+        for (let i=0; i<10; i++) {
+            let str = getItems(id);
+            let obj = JSON.parse(str);
+            items = items.concat(obj.list);
+            id = obj.list[19].Id;
+            console.log("new id is :", id);
+        }
+        console.info(items);
+        btn.attributes["itemId"].value = id;
+        let text = getUrls(items);
+        document.getElementById("items").innerText = oldContent + text;
+        document.getElementById("btn").innerText = "继续拉取";
+    }
+
+    function getItems(itemId) {
+        let httpRequest = new XMLHttpRequest();
+        let jsonStr = "";
+        httpRequest.open('POST', url, false);
+        httpRequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        httpRequest.onreadystatechange = function () {
+            if (httpRequest.readyState == 4 && httpRequest.status == 200) {//验证请求是否发送成功
+                jsonStr = httpRequest.responseText;//获取到服务端返回的数据
+            } else {
+                return "{}"
+            }
+        };
+        httpRequest.send('id=' + itemId + '&groupid=0');
+        return jsonStr
+    }
+
+    function getUrls(items) {
+        let text = "\n";
+        for (let i = 0; i < items.length; i++) {
+            let con = items[i].MsgContent;
+            let data = con.split('\r\n');
+            for (let k in data) {
+                if (data[k].indexOf("https://item") != -1) {
+                    let link = data[k].split("https://item");
+                    text = text + "https://item" + link[1] + "\n";
+                }
+                if (data[k].indexOf("https://detail") != -1) {
+                    let link = data[k].split("https://detail");
+                    text = text + "https://detail" + link[1] + "\n";
+                }
+            }
+        }
+        return text;
+    }
+</script>
+</body>
+</html>
