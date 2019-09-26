@@ -20,13 +20,15 @@ type FanliInfo struct {
 }
 
 type Process struct {
-	Url   string `json:"url"`
-	Start bool   `json:"start"`
+	Url       string `json:"url"`
+	Start     bool   `json:"start"`
+	MsgPrefix string `json:"msgPrefix"`
 }
 
 type Premonitor struct {
-	Url   string `json:"url"`
-	Start bool   `json:"start"`
+	Url       string `json:"url"`
+	Start     bool   `json:"start"`
+	MsgPrefix string `json:"msgPrefix"`
 }
 
 type RecInfo struct {

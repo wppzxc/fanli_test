@@ -18,6 +18,8 @@ fanli:
   process:
     url: "http://v2.yituike.com/admin/goods/goods_store?limit=100&page=1&state=1"
     start: false
+    msgPrefix: "这是进行中的消息前缀"
   premonitor:
     url: "http://v2.yituike.com/admin/goods/goods_store?limit=100&page=1&state=2"
     start: true
+    msgPrefix: "这是预告的消息前缀"

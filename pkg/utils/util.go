@@ -14,8 +14,7 @@ import (
 )
 
 const (
-	msgFormat = `预告中有新增拼多多免单！欢迎查看！
-拼多多免单来袭！马上登陆查看！
+	msgFormat = `%s
 
 %s
 
@@ -25,10 +24,10 @@ const (
 	timeFormat = "2006-01-02 15:04:05"
 )
 
-func GetMsg(item types.Item, link string) string {
+func GetMsg(preifx string, item types.Item, link string) string {
 	str := item.ExtendDocument
 	str = strings.Replace(str, "#", "", -1)
-	str = fmt.Sprintf(msgFormat, str, time.Unix(item.StartTime, 0).Format(timeFormat), link)
+	str = fmt.Sprintf(msgFormat, preifx, str, time.Unix(item.StartTime, 0).Format(timeFormat), link)
 	return str
 }
 

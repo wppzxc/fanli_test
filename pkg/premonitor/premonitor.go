@@ -66,7 +66,7 @@ func (p *Premonitor) StartPremonitor() {
 				klog.Infof("Success on send image to user %s ", u.Name)
 			}
 
-			msg := utils.GetMsg(diffItems[0], u.Link)
+			msg := utils.GetMsg(p.Config.Fanli.Premonitor.MsgPrefix, diffItems[0], u.Link)
 			klog.V(3).Infof("msg is : %s", msg)
 			if err := utils.SendMessage(msg, u.Name); err != nil {
 				klog.Errorf("Error on send msg : %s", err)

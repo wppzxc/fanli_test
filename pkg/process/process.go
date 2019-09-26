@@ -66,7 +66,7 @@ func (p *Processer) StartProcess() {
 				klog.Infof("Success on send image to user %s ", u.Name)
 			}
 
-			msg := utils.GetMsg(diffItems[0], u.Link)
+			msg := utils.GetMsg(p.Config.Fanli.Process.MsgPrefix, diffItems[0], u.Link)
 			if err := utils.SendMessage(msg, u.Name); err != nil {
 				klog.Errorf("Error on send msg : %s", err)
 			} else {

@@ -1,0 +1,56 @@
+<!DOCTYPE HTML>
+<html lang="zh">
+<head>
+    <title>好单库</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+</head>
+<body>
+<h1>好单库</h1>
+<button id="btn" itemId="0" onclick="onClick()">拉取</button>
+<h3>链接地址：</h3>
+<p id="items"></p>
+<script type="text/javascript">
+    const url = "https://www.haodanku.com/indexapi/get_allitem_list?sort=3&p=1";
+
+    function onClick() {
+        let btn = document.getElementById("btn");
+        let id = btn.attributes["itemId"].value;
+        let oldContent = document.getElementById("items").innerText;
+        console.log("init id is :", id);
+        let items = [];
+        // for (let i=0; i<10; i++) {
+        let str = getItems();
+        let obj = JSON.parse(str);
+        items = items.concat(obj.item_info);
+        // }
+        console.info(items);
+        let text = getUrls(items);
+        document.getElementById("items").innerText = oldContent + text;
+    }
+
+    function getItems() {
+        let httpRequest = new XMLHttpRequest();
+        let jsonStr = "";
+        httpRequest.open('GET', url, false);
+        // httpRequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        httpRequest.onreadystatechange = function () {
+            if (httpRequest.readyState == 4 && httpRequest.status == 200) {//验证请求是否发送成功
+                jsonStr = httpRequest.responseText;//获取到服务端返回的数据
+            } else {
+                return "{}"
+            }
+        };
+        httpRequest.send();
+        return jsonStr
+    }
+
+    function getUrls(items) {
+        let text = "";
+        for (let i = 0; i < items.length; i++) {
+            text = text + "https://detail.tmall.com/item.htm?id=" + items[i].itemid + '\n';
+        }
+        return text;
+    }
+</script>
+</body>
+</html>
