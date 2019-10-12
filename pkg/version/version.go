@@ -32,3 +32,7 @@ func Get() Info {
 	}
 }
 
+func GetMainVersion() string {
+	return version[1:2]
+}
+
